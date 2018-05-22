@@ -5,10 +5,11 @@ from ant_sim.agents.base import Actor
 
 class AntAgent(Actor):
 
+    IMGAGE_NAME = 'ant.png'
     MAX_VELOCITY = 10
 
-    def __init__(self, img, *args, **kwargs):
-        super(AntAgent, self).__init__(img, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(AntAgent, self).__init__(*args, **kwargs)
 
         self.state = 'wandering'
         self.speed = 40.0
@@ -21,6 +22,10 @@ class AntAgent(Actor):
 
     def start_wandering(self):
         self.state = 'wandering'
+        self.speed = 10.0
+
+    def start_following_trace(self):
+        self.state = 'tracing'
         self.speed = 10.0
 
     def update_velocity(self, dt):

@@ -1,13 +1,13 @@
 import math
-from pyglet.sprite import Sprite
+import pyglet
 
 
-class Renderable(Sprite):
+class Renderable(pyglet.sprite.Sprite):
 
     IMGAGE_NAME = 'base.png'
 
-    def __init__(self, img, *args, **kwargs):
-        self._image = img
+    def __init__(self, *args, **kwargs):
+        self._image = pyglet.resource.image(self.IMGAGE_NAME)
         self._center_image()
         super(Renderable, self).__init__(img=self._image, *args, **kwargs)
 
@@ -20,8 +20,8 @@ class Actor(Renderable):
 
     MAX_VELOCITY = 0
 
-    def __init__(self, img, *args, **kwargs):
-        super(Actor, self).__init__(img, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(Actor, self).__init__(*args, **kwargs)
 
         self.vel_x = 0.0
         self.vel_y = 0.0
@@ -31,6 +31,8 @@ class Actor(Renderable):
         self.update_velocity(dt)
         self.normalize_velocity()
         self.update_position(dt)
+
+        return self.x, self.y
 
     def update_position(self, dt):
         self.clamp_position()
