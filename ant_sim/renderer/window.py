@@ -9,8 +9,8 @@ MAP_SIZE = 500
 
 MAIN_BATCH = pyglet.graphics.Batch()
 
-ant_agent1 = AntAgent(x=100, y=100, batch=MAIN_BATCH)
-ant_agent2 = AntAgent(x=150, y=100, batch=MAIN_BATCH)
+ant_agent1 = AntAgent(x=100, y=100, batch=MAIN_BATCH, speed=100)
+ant_agent2 = AntAgent(x=150, y=100, batch=MAIN_BATCH, speed=100)
 
 ANTS = [ant_agent1, ant_agent2]
 
@@ -27,7 +27,7 @@ def update(dt):
         PherManager.add_pheromone(x, y, lifetime=2)
 
 
-pyglet.clock.schedule_interval(update, 1/120.0)
+pyglet.clock.schedule_interval(update, 1/60.0)
 game_window = pyglet.window.Window(MAP_SIZE, MAP_SIZE)
 
 
