@@ -40,8 +40,6 @@ class Actor(Renderable):
         self.x = new_x
         self.y = new_y
 
-        return self.x, self.y
-
     def calculate_new_position(self, dt):
         new_x = self.x + self._mov_vec[0] * dt * self._speed
         new_y = self.y + self._mov_vec[1] * dt * self._speed
