@@ -12,8 +12,9 @@ ANT_STATE_TUPLE = namedtuple('AntState', ['WANDERING', 'FOLLOW'])
 ANT_STATE = ANT_STATE_TUPLE(WANDERING='wandering',
                             FOLLOW='follow')
 
-FOLLOW_COLOR = (10, 200, 230)
-WANDERING_COLOR = (190, 150, 90)
+COL_FOLLOW_SEARCHER = (10, 200, 230)
+COL_WANDERING = (190, 150, 90)
+COL_FOLLOW_APPLE = (240, 90, 90)
 
 
 class AntAgent(Actor):
@@ -29,7 +30,7 @@ class AntAgent(Actor):
         else:
             self.id = str(uuid.uuid4())[:10]
 
-        self.color = WANDERING_COLOR
+        self.color = COL_WANDERING
         self.state = ANT_STATE.WANDERING
         """Current state of the agent, determines behavior"""
 
@@ -43,7 +44,7 @@ class AntAgent(Actor):
         """Probability ant will change its turn angle to opposite
            (computed on each turn event)"""
 
-        self.pheromone_freq = .15
+        self.pheromone_freq = .2
         """How frequent (s) drop a pheromone"""
 
         self.smell_range = 20
@@ -60,6 +61,8 @@ class AntAgent(Actor):
 
         self.pheromone_timer = self.pheromone_freq
         self.follow_timer = self.follow_time
+
+        self.has_apple = False
 
         if not vec:
             self.reset_mov_vec()
@@ -78,15 +81,22 @@ class AntAgent(Actor):
                                     0, self.follow_time)
         if self.state == ANT_STATE.FOLLOW and self.follow_timer == 0:
             self.state = ANT_STATE.WANDERING
-            self.color = WANDERING_COLOR
+            self.color = COL_WANDERING
             LOG.info('ANT<%s> State=%s' % (self.id, self.state))
 
         super(AntAgent, self).update(dt)
 
+    def pick_up_apple(self):
+        self.has_apple = True
+        self.color = COL_FOLLOW_APPLE
+
     def attract_to_pheromone(self, x, y):
         if self.state != ANT_STATE.FOLLOW:
             self.state = ANT_STATE.FOLLOW
-            self.color = FOLLOW_COLOR
+            if self.has_apple:
+                self.color = COL_FOLLOW_APPLE
+            else:
+                self.color = COL_FOLLOW_SEARCHER
             LOG.info('ANT<%s> State=%s' % (self.id, self.state))
         new_x, new_y = x - self.x, y - self.y
         self._mov_vec = self.normalize(np.array([new_x, new_y]))

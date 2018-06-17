@@ -2,11 +2,14 @@ import math
 import numpy as np
 from agents.base import Renderable
 
+COL_APPLE_SMELL = (255, 0, 50)
+COL_ANT_SMELL = (10, 200, 10)
+
 
 class Pheromone(Renderable):
     IMGAGE_NAME = 'pheromone.png'
 
-    def __init__(self, x, y, lifetime, owner, *args, **kwargs):
+    def __init__(self, x, y, lifetime, owner, flavor, *args, **kwargs):
         super(Pheromone, self).__init__(*args, **kwargs)
         self.x = x
         self.y = y
@@ -14,6 +17,12 @@ class Pheromone(Renderable):
         self.time_left = self.lifetime
         self.opacity = 200
         self.owner = owner
+        self.flavor = flavor
+
+        if flavor == 'apple':
+            self.color = COL_APPLE_SMELL
+        else:
+            self.color = COL_ANT_SMELL
 
     def update(self, dt):
         self.time_left -= 1 * dt
@@ -32,22 +41,34 @@ class PheromoneManager(object):
         self.pheromones = list()
         self.batch = batch
 
-    def add_pheromone(self, x, y, owner, lifetime=10):
-        self.pheromones.append(Pheromone(x, y, lifetime, owner, batch=self.batch))
+    def add_pheromone(self, ant, lifetime=10):
+        if ant.has_apple:
+            flavor = 'apple'
+        else:
+            flavor = 'ant'
+        self.pheromones.append(Pheromone(ant.x, ant.y, lifetime, ant.id,
+                                         flavor=flavor, batch=self.batch))
 
     def get_nearby_pheromones(self, ant):
         ant_id = ant.id
         x = ant.x
         y = ant.y
+        if ant.has_apple:
+            flavor = 'apple'
+        else:
+            flavor = 'ant'
         smell_range = ant.smell_range
         smell_angle = ant.smell_angle
+
+        # filter by flavor
+        valid0 = filter(lambda pher: pher.flavor == flavor, self.pheromones)
 
         # remove pheromones belonging to given ant and outside range
         valid1 = filter(lambda pher:
                        (pher.owner != ant_id) and
                        (x - smell_range < pher.x < x + smell_range) and
                        (x - smell_range < pher.y < y + smell_range),
-                       self.pheromones)
+                       valid0)
 
         # radius range filter
         valid2 = filter(lambda p: PheromoneManager.length(
