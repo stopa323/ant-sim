@@ -44,7 +44,7 @@ class AntAgent(Actor):
         """Probability ant will change its turn angle to opposite
            (computed on each turn event)"""
 
-        self.pheromone_freq = .2
+        self.pheromone_freq = .18
         """How frequent (s) drop a pheromone"""
 
         self.smell_range = 20
